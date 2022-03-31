@@ -3,6 +3,8 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/UserService');
+const User = require('../lib/models/User');
+const { agent } = require('supertest');
 
 describe('top-secrets routes', () => {
   beforeEach(() => {
@@ -48,5 +50,37 @@ describe('top-secrets routes', () => {
           success: true,
           message: 'Signed out successfully'
     });
+  });
+
+  it('allows logged in users to view top secrets', async () => {
+    const agent = request.agent(app);
+
+    let res = await agent.get('/api/v1/secrets');
+    expect(res.status).toEqual(401);
+
+    await UserService.create({
+      username: 'joey joe joe shabadoo',
+      password: 'strongpassword',
+    });
+
+    await agent.post('/api/v1/secrets').send({
+      username: 'joey joe joe shabadoo',
+      password: 'strongpassword',
+    });
+
+    await agent.post('/api/v1/secrets').send({
+      title: 'dod secret guy',
+      description: 'guy who handles super secrets',
+  });
+
+  const expected = [
+    {
+      title: 'dod secret guy',
+      description: 'guy who handles super secrets',
+      createdAt: expect.any(String),
+    },
+  ];
+  res = await agent.get('/api/v1/secrets');
+  expect(res.body).toEqual(expected);
   });
 });
