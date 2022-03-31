@@ -52,35 +52,47 @@ describe('top-secrets routes', () => {
     });
   });
 
+  // it('allows a logged in user to create a secret', async () => {
+
+  // })
+
   it('allows logged in users to view top secrets', async () => {
     const agent = request.agent(app);
-
     let res = await agent.get('/api/v1/secrets');
     expect(res.status).toEqual(401);
 
+    const expected = [
+      {
+        id: expect.any(String),
+        title: 'Jim bob',
+        description: 'Secret dude',
+        createdAt: expect.any(String)
+      },
+      {
+        id: expect.any(String),
+        title: 'Fred',
+        description: 'cant keep secrets',
+        createdAt: expect.any(String)
+      }
+    ];
+
     await UserService.create({
-      username: 'joey joe joe shabadoo',
-      password: 'strongpassword',
+      email: 'Jim Bob',
+      password: 'Secret dude'
+    });
+    await agent.post('/api/v1/users/sessions').send({
+      email: 'Jim Bob',
+      password: 'Secret dude'
     });
 
-    await agent.post('/api/v1/secrets').send({
-      username: 'joey joe joe shabadoo',
-      password: 'strongpassword',
-    });
 
-    await agent.post('/api/v1/secrets').send({
-      title: 'dod secret guy',
-      description: 'guy who handles super secrets',
-  });
 
-  const expected = [
-    {
-      title: 'dod secret guy',
-      description: 'guy who handles super secrets',
-      createdAt: expect.any(String),
-    },
-  ];
-  res = await agent.get('/api/v1/secrets');
-  expect(res.body).toEqual(expected);
+    
+
+
+    res = await agent
+      .get('/api/v1/secrets');
+
+    expect(res.body).toEqual(expected);
   });
 });
