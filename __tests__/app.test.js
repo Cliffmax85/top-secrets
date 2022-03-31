@@ -22,15 +22,22 @@ describe('top-secrets routes', () => {
   })
 
   it('signs in a user', async () => {
+    const agent = request.agent(app);
     const user = await UserService.create({
       email: 'puppy@dog.com',
       password: 'coolpassword',
     });
 
-    const res = await request(app)
+    const res = await agent
       .post('/api/v1/users/sessions')
-      .send(user);
+      .send({
+        email: 'puppy@dog.com',
+        password: 'coolpassword'
+      });
 
-    expect(res.body).toEqual({ message: 'Signed in successfully', user, });
+    expect(res.body).toEqual({ 
+      message: 'Signed in successfully',
+      user, 
+    });
   })
 });
