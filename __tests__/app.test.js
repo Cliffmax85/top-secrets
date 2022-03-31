@@ -39,15 +39,14 @@ describe('top-secrets routes', () => {
       message: 'Signed in successfully',
       user, 
     });
-
-    it('logs out a user', async () => {
-      const res = await request(app)
-      .delete('/api/v1/users/sessions');
-
-      expect(res.body).toEqual({
-        success: true,
-        message: 'Signed out successfully'
-      });
-    })
-  })
+  });
+  it('logs out a user', async () => {
+        const res = await request(app)
+        .delete('/api/v1/users/sessions');
+  
+        expect(res.body).toEqual({
+          success: true,
+          message: 'Signed out successfully'
+    });
+  });
 });
