@@ -118,7 +118,7 @@ describe('top-secrets routes', () => {
       });
 
     await agent
-      .post('/api/v1/sessions')
+      .post('/api/v1/users/sessions')
       .send({
         email: 'Jim bob',
         password: 'Secret dude'
