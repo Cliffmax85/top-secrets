@@ -85,14 +85,52 @@ describe('top-secrets routes', () => {
       password: 'Secret dude'
     });
 
-
-
-    
-
-
     res = await agent
       .get('/api/v1/secrets');
 
     expect(res.body).toEqual(expected);
   });
+
+  it('lets a user add a secret', async () => {
+    const agent = request.agent(app);
+
+    const expected = {
+      id: expect.any(String),
+      title: 'this is top secret',
+      description: 'Ice cream is good',
+      createdAt: expect.any(String)
+    };
+
+    let res = await agent
+      .post('/api/v1/secrets')
+      .send({
+        title: 'this is top secret',
+        description: 'Ice cream is good',
+      });
+
+    expect(res.status).toEqual(401);
+
+    await agent
+      .post('/api/v1/users')
+      .send({
+        email: 'Jim bob',
+        password: 'Secret dude'
+      });
+
+    await agent
+      .post('/api/v1/sessions')
+      .send({
+        email: 'Jim bob',
+        password: 'Secret dude'
+      });
+
+    res = await agent
+      .post('/api/v1/secrets')
+      .send({
+        title: 'this is top secret',
+        description: 'Ice cream is good'
+      });
+
+    expect(res.body).toEqual(expected);
+  })
 });
